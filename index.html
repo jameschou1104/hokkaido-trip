@@ -46,7 +46,7 @@
 
 <div id="app" class="app-container">
     
-    <header class="relative w-full h-[350px] overflow-hidden">
+    <header class="relative w-full h-[400px] overflow-hidden">
         <img src="header-bg.png" alt="北海道首頁" class="w-full h-full object-cover object-center">
         
         <div class="absolute bottom-8 right-4 flex space-x-3 z-20">
@@ -186,42 +186,42 @@
 
             <div class="bg-white rounded-2xl overflow-hidden card-shadow">
                 <div class="bg-blue-50 px-5 py-3 border-b border-blue-100 flex justify-between items-center">
-                    <h3 class="font-bold text-blue-800"><i class="fa-solid fa-plane mr-2"></i>航班資訊</h3>
+                    <h3 class="font-bold text-blue-800"><i class="fa-solid fa-plane mr-2"></i>航班資訊 (酷航 Scoot)</h3>
                 </div>
                 <div class="p-5 space-y-4">
                     <div class="flex items-center justify-between">
                         <div class="text-center">
                             <div class="text-2xl font-bold text-gray-800">TPE</div>
-                            <div class="text-xs text-gray-400">10:00</div>
+                            <div class="text-xs text-gray-400">12:30</div>
                         </div>
                         <div class="flex-1 px-4 text-center">
-                            <div class="text-xs text-blue-500 font-bold mb-1">JX850</div>
+                            <div class="text-xs text-blue-500 font-bold mb-1">TR892</div>
                             <div class="h-0.5 bg-gray-200 relative">
                                 <i class="fa-solid fa-plane absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-300"></i>
                             </div>
-                            <div class="text-[10px] text-gray-400 mt-1">4h 0m</div>
+                            <div class="text-[10px] text-gray-400 mt-1">4h 50m</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-gray-800">CTS</div>
-                            <div class="text-xs text-gray-400">15:00</div>
+                            <div class="text-xs text-gray-400">17:20</div>
                         </div>
                     </div>
                     <div class="border-t border-dashed border-gray-200 my-2"></div>
                     <div class="flex items-center justify-between">
                         <div class="text-center">
                             <div class="text-2xl font-bold text-gray-800">CTS</div>
-                            <div class="text-xs text-gray-400">16:30</div>
+                            <div class="text-xs text-gray-400">18:40</div>
                         </div>
                         <div class="flex-1 px-4 text-center">
-                            <div class="text-xs text-blue-500 font-bold mb-1">JX851</div>
+                            <div class="text-xs text-blue-500 font-bold mb-1">TR893</div>
                             <div class="h-0.5 bg-gray-200 relative">
                                 <i class="fa-solid fa-plane absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-300 rotate-180"></i>
                             </div>
-                            <div class="text-[10px] text-gray-400 mt-1">4h 30m</div>
+                            <div class="text-[10px] text-gray-400 mt-1">3h 40m</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-gray-800">TPE</div>
-                            <div class="text-xs text-gray-400">20:00</div>
+                            <div class="text-xs text-gray-400">22:20</div>
                         </div>
                     </div>
                 </div>
@@ -385,22 +385,24 @@
             
             // 模擬旅程日期
             const tripDays = [
-                { week: 'FRI', date: '6' },
-                { week: 'SAT', date: '7' },
-                { week: 'SUN', date: '8' },
-                { week: 'MON', date: '9' },
-                { week: 'TUE', date: '10' }
+                { week: 'WED', date: '19' },
+                { week: 'THU', date: '20' },
+                { week: 'FRI', date: '21' },
+                { week: 'SAT', date: '22' },
+                { week: 'SUN', date: '23' },
+                { week: 'MON', date: '24' },
+                { week: 'TUE', date: '25' }
             ];
 
             // 假資料：行程 (巢狀陣列，對應 index)
             const itineraryData = reactive([
-                // Day 1
+                // Day 1 (2/19)
                 [
-                    { id: 1, category: '航班', name: '出發前往北海道', time: '10:00', notes: '記得帶護照，JX850', transportType: 'flight' },
-                    { id: 2, category: '住宿', name: '札幌格蘭大飯店 Check-in', time: '16:00', travelTime: '50分鐘', transportType: 'train' },
-                    { id: 3, category: '美食', name: '湯咖哩 GARAKU', time: '18:00', travelTime: '10分鐘', transportType: 'walk', notes: '排隊名店' }
+                    { id: 1, category: '航班', name: '搭乘酷航前往北海道', time: '12:30', notes: '航班 TR892，預計 17:20 抵達', transportType: 'flight' },
+                    { id: 2, category: '住宿', name: '札幌飯店 Check-in', time: '19:30', travelTime: '約60分鐘', transportType: 'train' },
+                    { id: 3, category: '美食', name: '札幌晚餐', time: '20:30', travelTime: '10分鐘', transportType: 'walk', notes: '放鬆一下' }
                 ],
-                // Day 2
+                // Day 2 (2/20) - 這裡可以之後自己新增
                 [
                     { id: 4, category: '景點', name: '大通公園', time: '09:00', travelTime: '10分鐘', transportType: 'walk', ticket: '免費' },
                     { id: 5, category: '美食', name: '二條市場 海鮮丼', time: '12:00', travelTime: '15分鐘', transportType: 'walk' },
@@ -574,5 +576,6 @@
 </body>
 
 </html>
+
 
 
