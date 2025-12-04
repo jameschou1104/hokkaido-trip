@@ -72,8 +72,8 @@
             <div class="weather-gradient rounded-2xl p-4 text-white mb-6 flex items-center justify-between shadow-lg ring-4 ring-white">
                 <div>
                     <div class="text-sm opacity-90"><i class="fa-solid fa-location-arrow mr-1"></i> 札幌 Sapporo</div>
-                    <div class="text-3xl font-bold mt-1">-2°C</div>
-                    <div class="text-xs opacity-80 mt-1">體感 -6°C</div>
+                    <div class="text-3xl font-bold mt-1">{{ weather.temp }}°C</div>
+                    <div class="text-xs opacity-80 mt-1">體感 {{ weather.feelsLike }}°C</div>
                 </div>
                 <div class="text-center">
                     <i class="fa-solid fa-snowflake text-4xl animate-pulse"></i>
@@ -227,19 +227,35 @@
                 </div>
             </div>
 
+            
             <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white rounded-2xl p-4 card-shadow" @click="openMap('札幌格蘭大飯店')">
-                    <i class="fa-solid fa-hotel text-2xl text-purple-400 mb-2"></i>
-                    <h4 class="font-bold text-sm">札幌格蘭大飯店</h4>
-                    <p class="text-xs text-gray-400 mt-1">011-261-3311</p>
+                
+                <div class="bg-white rounded-2xl p-4 card-shadow flex flex-col">
+                    <div class="flex items-center mb-3">
+                         <i class="fa-solid fa-hotel text-2xl text-purple-400 mr-2"></i>
+                         <h4 class="font-bold text-sm">住宿資訊</h4>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div @click.stop="openMap('APA HOTEL SAPPORO')" class="border-l-2 border-purple-200 pl-2 cursor-pointer hover:bg-purple-50 transition-colors py-1">
+                            <div class="font-bold text-xs text-gray-700">APA HOTEL SAPPORO</div>
+                            <div class="text-[10px] text-purple-400 mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>導航</div>
+                        </div>
+
+                        <div @click.stop="openMap('セトル豊平３・１')" class="border-l-2 border-purple-200 pl-2 cursor-pointer hover:bg-purple-50 transition-colors py-1">
+                            <div class="font-bold text-xs text-gray-700">セトル豊平３・１</div>
+                            <div class="text-[10px] text-purple-400 mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>導航</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-4 card-shadow cursor-pointer hover:scale-[1.02] transition-transform" @click="openMap('札幌車站')">
+                    <i class="fa-solid fa-train-subway text-2xl text-green-400 mb-2"></i>
+                    <h4 class="font-bold text-sm">交通資訊</h4>
+                    <p class="text-xs text-gray-400 mt-1">札幌車站</p>
                     <p class="text-[10px] text-blue-500 mt-2">點擊導航 ></p>
                 </div>
-                <div class="bg-white rounded-2xl p-4 card-shadow" @click="openMap('Toyota Rent a Car Sapporo')">
-                    <i class="fa-solid fa-car text-2xl text-green-400 mb-2"></i>
-                    <h4 class="font-bold text-sm">Toyota 租車</h4>
-                    <p class="text-xs text-gray-400 mt-1">札幌站北口店</p>
-                    <p class="text-[10px] text-blue-500 mt-2">點擊導航 ></p>
-                </div>
+
             </div>
 
              <div class="bg-red-50 rounded-2xl p-4 border border-red-100">
@@ -626,6 +642,7 @@
 </body>
 
 </html>
+
 
 
 
