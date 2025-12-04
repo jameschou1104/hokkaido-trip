@@ -47,7 +47,7 @@
 <div id="app" class="app-container">
     
     <header class="relative w-full h-[250px] overflow-hidden">
-        <img src="首頁.jpg" alt="北海道首頁" class="w-full h-full object-cover object-center">
+        <img src="header-bg.jpg" alt="北海道首頁" class="w-full h-full object-cover object-center">
         
         <div class="absolute bottom-8 right-4 flex space-x-3 z-20">
             <button @click="currentTab = 'itinerary'" :class="currentTab === 'itinerary' ? 'bg-white text-blue-500' : 'bg-white/60 text-gray-500'" class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm">
@@ -572,4 +572,5 @@
     }).mount('#app');
 </script>
 </body>
+
 </html>
