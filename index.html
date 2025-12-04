@@ -382,6 +382,43 @@
         setup() {
             const currentTab = ref('itinerary');
             const selectedDateIndex = ref(0);
+            // =========== 請從這裡開始複製貼上 ===========
+            
+            // 1. 定義天氣變數
+            const weather = reactive({ 
+                temp: '--', 
+                feelsLike: '--', 
+                text: '載入中...', 
+                icon: 'fa-snowflake' 
+            });
+
+            // 2. 抓取札幌天氣 (Open-Meteo 免費 API)
+            const fetchWeather = async () => {
+                try {
+                    // 札幌座標
+                    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.0618&longitude=141.3545&current=temperature_2m,apparent_temperature,weather_code&timezone=Asia%2FTokyo');
+                    const data = await res.json();
+                    
+                    // 更新數值
+                    weather.temp = Math.round(data.current.temperature_2m);
+                    weather.feelsLike = Math.round(data.current.apparent_temperature);
+                    
+                    // 判斷天氣圖示
+                    const code = data.current.weather_code;
+                    if (code <= 3) { weather.text = '多雲時晴'; weather.icon = 'fa-cloud-sun'; }
+                    else if (code <= 48) { weather.text = '起霧'; weather.icon = 'fa-smog'; }
+                    else if (code <= 67) { weather.text = '下雨'; weather.icon = 'fa-cloud-rain'; }
+                    else if (code <= 77 || code <= 86) { weather.text = '下雪'; weather.icon = 'fa-snowflake'; }
+                    else { weather.text = '暴風雪'; weather.icon = 'fa-wind'; }
+
+                } catch (e) {
+                    console.log('天氣載入失敗');
+                    weather.text = '無法載入';
+                }
+            };
+            
+            // 3. 執行抓取
+            fetchWeather();
             
             // 模擬旅程日期
             const tripDays = [
@@ -541,7 +578,12 @@
 
             // Helper Functions
             const openMap = (location) => {
-                window.open(`https://www.google.com/maps/dir/?api=1&destination=${location}`, '_blank');
+                // 如果是航班，就不開地圖
+                if(location.includes('前往') || location.includes('航班')) return;
+                
+                // 為了更精準，自動在關鍵字後面加上 "北海道" (避免搜到台北的店)
+                const query = encodeURIComponent(location + ' 北海道');
+                window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
             };
 
             const getCategoryColor = (cat) => {
@@ -564,7 +606,7 @@
             return {
                 currentTab, selectedDateIndex, tripDays, itineraryData, currentDayItinerary,
                 showAddModal, isEditing, form, editItinerary, saveItinerary, deleteItinerary, resetForm,
-                moveUp, moveDown,
+                moveUp, moveDown,weather,
                 currencyJpy, currencyTwd, convertCurrency,
                 showShopModal, shoppingList, shopForm, handleImageUpload, saveShopItem,
                 showExpModal, expenses, expForm, saveExpense, totalExpenseTWD, expenseCash, expenseCard,
@@ -576,6 +618,7 @@
 </body>
 
 </html>
+
 
 
 
