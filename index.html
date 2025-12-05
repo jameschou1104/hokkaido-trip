@@ -47,7 +47,7 @@
 <div id="app" class="app-container">
     
     <header class="relative w-full h-[400px] overflow-hidden">
-        <img src="header-bg.png" alt="北海道首頁" class="w-full h-full object-cover object-center">
+        <img :src="currentHeaderImage" alt="北海道首頁" class="w-full h-full object-cover object-center transition-all duration-500">
         
         <div class="absolute bottom-8 right-4 flex space-x-3 z-20">
             <button @click="currentTab = 'itinerary'" :class="currentTab === 'itinerary' ? 'bg-white text-blue-500' : 'bg-white/60 text-gray-500'" class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm">
@@ -469,6 +469,18 @@
             const currentDayItinerary = computed(() => {
                 return itineraryData[selectedDateIndex.value] || [];
             });
+            // --- 新增：動態切換首頁圖片 ---
+            const currentHeaderImage = computed(() => {
+                // 請確認這裡的檔名跟你上傳到 GitHub 的一模一樣！
+                const imageMap = {
+                    'itinerary': 'header-bg.png',   // 行程 (原本的首頁圖)
+                    'info': 'header-info.png',      // 資訊頁
+                    'shopping': 'header-shop.png',  // 購物頁
+                    'expense': 'header-money.png'   // 花費頁
+                };
+                // 如果找不到對應的圖，就預設顯示首頁圖
+                return imageMap[currentTab.value] || 'header-bg.png';
+            });
 
             // 表單控制
             const showAddModal = ref(false);
@@ -630,7 +642,7 @@
             return {
                 currentTab, selectedDateIndex, tripDays, itineraryData, currentDayItinerary,
                 showAddModal, isEditing, form, editItinerary, saveItinerary, deleteItinerary, resetForm,
-                moveUp, moveDown,weather,deleteExpense,
+                moveUp, moveDown,weather,deleteExpense,currentHeaderImage,
                 currencyJpy, currencyTwd, convertCurrency,
                 showShopModal, shoppingList, shopForm, handleImageUpload, saveShopItem,
                 showExpModal, expenses, expForm, saveExpense, totalExpenseTWD, expenseCash, expenseCard,
@@ -642,6 +654,7 @@
 </body>
 
 </html>
+
 
 
 
