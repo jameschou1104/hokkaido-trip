@@ -343,7 +343,11 @@
                     <option value="其他">其他</option>
                 </select>
                 <input v-model="form.name" type="text" placeholder="名稱" class="w-full bg-gray-50 p-3 rounded-lg border-none">
-                <input v-model="form.time" type="time" class="w-full bg-gray-50 p-3 rounded-lg border-none">
+                <div class="flex items-center bg-gray-50 rounded-lg px-3 border border-gray-100">
+                    <i class="fa-regular fa-clock text-gray-400 mr-2"></i>
+                    <span class="text-gray-400 text-sm whitespace-nowrap mr-2">時間</span>
+                    <input v-model="form.time" type="time" class="w-full bg-transparent py-3 outline-none text-gray-700">
+                </div>
                 <input v-if="form.category === '景點'" v-model="form.ticket" type="text" placeholder="門票資訊" class="w-full bg-gray-50 p-3 rounded-lg border-none">
                 <textarea v-model="form.notes" placeholder="備註" class="w-full bg-gray-50 p-3 rounded-lg border-none h-20"></textarea>
             </div>
@@ -657,6 +661,7 @@
 </body>
 
 </html>
+
 
 
 
