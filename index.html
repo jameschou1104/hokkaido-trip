@@ -429,7 +429,7 @@
 </div>
 
 <script>
-    const { createApp, reactive, computed, ref } = Vue;
+    const { createApp, reactive, computed, ref, watch } = Vue;
 
     createApp({
         setup() {
@@ -485,16 +485,21 @@
             ];
 
             // 假資料：行程 (巢狀陣列，對應 index)
-            const itineraryData = reactive([
-                // Day 1 (2/19)
+            // --- 1. 行程資料 (改為讀取存檔) ---
+            const defaultItinerary = [
+                // 這裡放原本 Day 1 (2/19) 的預設資料
                 [
                     { id: 1, category: '航班', name: '搭乘酷航前往北海道', time: '12:30', notes: '航班 TR892，預計 17:20 抵達', transportType: 'flight' },
-                    { id: 2, category: '住宿', name: 'APA HOTEL SAPPORO Check-in', time: '19:30', travelTime: '約60分鐘', transportType: 'train' },
+                    { id: 2, category: '住宿', name: '札幌飯店 Check-in', time: '19:30', travelTime: '約60分鐘', transportType: 'train' },
                     { id: 3, category: '美食', name: '札幌晚餐', time: '20:30', travelTime: '10分鐘', transportType: 'walk', notes: '放鬆一下' }
                 ],
-
-                [], [], [] // 其他天
-            ]);
+                // Day 2 (2/20) ~ Day 7 (2/25) 預設空白
+                [], [], [], [], [], [] 
+            ];
+            
+            // 優先讀取 'hokkaido_itinerary' 存檔，沒有的話就用上面的預設值
+            const savedItinerary = localStorage.getItem('hokkaido_itinerary');
+            const itineraryData = reactive(savedItinerary ? JSON.parse(savedItinerary) : defaultItinerary);
 
             // 當前日期的行程
             const currentDayItinerary = computed(() => {
@@ -521,7 +526,9 @@
             
             // 購物控制
             const showShopModal = ref(false);
-            const shoppingList = reactive([
+          // --- 2. 購物清單 (改為讀取存檔) ---
+            const savedShopping = localStorage.getItem('hokkaido_shopping');
+            const shoppingList = reactive(savedShopping ? JSON.parse(savedShopping) : [
                 { name: '六花亭 葡萄奶油夾心餅', image: null },
                 { name: '白色戀人', image: null }
             ]);
@@ -529,7 +536,9 @@
 
             // 花費控制
             const showExpModal = ref(false);
-            const expenses = reactive([
+            // --- 3. 花費紀錄 (改為讀取存檔) ---
+            const savedExpenses = localStorage.getItem('hokkaido_expenses');
+            const expenses = reactive(savedExpenses ? JSON.parse(savedExpenses) : [
                 { category: '交通', name: 'JR 機場快線', date: 'Fri 6', amount: 1150, payment: '現金' }
             ]);
             const expForm = reactive({ category: '飲食', name: '', amount: '', payment: '現金' });
@@ -596,11 +605,46 @@
             };
 
             // 購物功能
+            // --- 購物圖片處理 (含壓縮與轉碼) ---
             const handleImageUpload = (e) => {
                 const file = e.target.files[0];
-                if(file) {
-                    shopForm.image = URL.createObjectURL(file);
-                }
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    
+                    img.onload = () => {
+                        // 1. 建立畫布 (Canvas) 來壓縮圖片
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        // 2. 設定壓縮後的最大寬度 (例如 500px，夠手機看了)
+                        const MAX_WIDTH = 500;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        // 3. 把圖片畫上去
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // 4. 轉成文字碼 (Base64)，並設定品質為 0.7 (稍微壓縮)
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        
+                        // 5. 存入表單
+                        shopForm.image = dataUrl;
+                    };
+                };
             };
             const saveShopItem = () => {
                 if(shopForm.name) {
@@ -669,6 +713,22 @@
                  const map = { '飲食': 'fa-utensils', '交通': 'fa-train', '購物': 'fa-bag-shopping', '門票': 'fa-ticket', '住宿': 'fa-bed' };
                  return `fa-solid ${map[cat] || 'fa-coins'}`;
             };
+            // =========== 自動存檔區 (Auto Save) ===========
+            
+            // 監聽行程變化 -> 存入 'hokkaido_itinerary'
+            watch(itineraryData, (newVal) => {
+                localStorage.setItem('hokkaido_itinerary', JSON.stringify(newVal));
+            }, { deep: true });
+
+            // 監聽購物清單變化 -> 存入 'hokkaido_shopping'
+            watch(shoppingList, (newVal) => {
+                localStorage.setItem('hokkaido_shopping', JSON.stringify(newVal));
+            }, { deep: true });
+
+            // 監聽花費變化 -> 存入 'hokkaido_expenses'
+            watch(expenses, (newVal) => {
+                localStorage.setItem('hokkaido_expenses', JSON.stringify(newVal));
+            }, { deep: true });
 
             return {
                 currentTab, selectedDateIndex, tripDays, itineraryData, currentDayItinerary,
@@ -685,6 +745,7 @@
 </body>
 
 </html>
+
 
 
 
