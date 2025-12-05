@@ -53,18 +53,39 @@
         <img :src="currentHeaderImage" alt="北海道首頁" class="w-full h-full object-cover object-center transition-all duration-500">
         
         <div class="absolute bottom-8 right-4 flex space-x-3 z-20">
-            <button @click="currentTab = 'itinerary'" :class="currentTab === 'itinerary' ? 'bg-white text-blue-500' : 'bg-white/60 text-gray-500'" class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm">
-                <i class="fa-solid fa-location-dot text-lg"></i>
+            
+            <button @click="currentTab = 'itinerary'" 
+                    :class="currentTab === 'itinerary' ? 'bg-white scale-110' : 'bg-white/80'" 
+                    class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
+                <img src="nav-map.png" 
+                     class="w-full h-full object-contain transition-all"
+                     :class="currentTab === 'itinerary' ? '' : 'grayscale opacity-60'">
             </button>
-            <button @click="currentTab = 'info'" :class="currentTab === 'info' ? 'bg-white text-blue-500' : 'bg-white/60 text-gray-500'" class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm">
-                <i class="fa-solid fa-circle-info text-lg"></i>
+
+            <button @click="currentTab = 'info'" 
+                    :class="currentTab === 'info' ? 'bg-white scale-110' : 'bg-white/80'" 
+                    class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
+                <img src="nav-info.png" 
+                     class="w-full h-full object-contain transition-all"
+                     :class="currentTab === 'info' ? '' : 'grayscale opacity-60'">
             </button>
-            <button @click="currentTab = 'shopping'" :class="currentTab === 'shopping' ? 'bg-white text-blue-500' : 'bg-white/60 text-gray-500'" class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm">
-                <i class="fa-solid fa-basket-shopping text-lg"></i>
+
+            <button @click="currentTab = 'shopping'" 
+                    :class="currentTab === 'shopping' ? 'bg-white scale-110' : 'bg-white/80'" 
+                    class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
+                <img src="nav-shop.png" 
+                     class="w-full h-full object-contain transition-all"
+                     :class="currentTab === 'shopping' ? '' : 'grayscale opacity-60'">
             </button>
-            <button @click="currentTab = 'expense'" :class="currentTab === 'expense' ? 'bg-white text-blue-500' : 'bg-white/60 text-gray-500'" class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm">
-                <i class="fa-solid fa-sack-dollar text-lg"></i>
+
+            <button @click="currentTab = 'expense'" 
+                    :class="currentTab === 'expense' ? 'bg-white scale-110' : 'bg-white/80'" 
+                    class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
+                <img src="nav-money.png" 
+                     class="w-full h-full object-contain transition-all"
+                     :class="currentTab === 'expense' ? '' : 'grayscale opacity-60'">
             </button>
+
         </div>
     </header>
 
@@ -664,6 +685,7 @@
 </body>
 
 </html>
+
 
 
 
