@@ -47,27 +47,32 @@
         <img :src="currentHeaderImage" alt="北海道首頁" class="w-full h-full object-cover object-center transition-all duration-500">
         
         <div class="absolute bottom-8 right-4 flex space-x-3 z-20">
-            <button @click="currentTab = 'itinerary'" 
-                    :class="currentTab === 'itinerary' ? 'bg-white scale-110' : 'bg-white/80'" 
-                    class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
-                 <i class="fa-solid fa-route text-lg" :class="currentTab === 'itinerary' ? 'text-blue-500' : 'text-gray-500'"></i>
-            </button>
-            <button @click="currentTab = 'info'" 
-                    :class="currentTab === 'info' ? 'bg-white scale-110' : 'bg-white/80'" 
-                    class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
-                 <i class="fa-solid fa-passport text-lg" :class="currentTab === 'info' ? 'text-blue-500' : 'text-gray-500'"></i>
-            </button>
-            <button @click="currentTab = 'shopping'" 
-                    :class="currentTab === 'shopping' ? 'bg-white scale-110' : 'bg-white/80'" 
-                    class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
-                 <i class="fa-solid fa-gift text-lg" :class="currentTab === 'shopping' ? 'text-blue-500' : 'text-gray-500'"></i>
-            </button>
-            <button @click="currentTab = 'expense'" 
-                    :class="currentTab === 'expense' ? 'bg-white scale-110' : 'bg-white/80'" 
-                    class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
-                 <i class="fa-solid fa-yen-sign text-lg" :class="currentTab === 'expense' ? 'text-blue-500' : 'text-gray-500'"></i>
-            </button>
-        </div>
+    
+    <button @click="currentTab = 'itinerary'" 
+            :class="currentTab === 'itinerary' ? 'bg-white scale-110' : 'bg-white/80'" 
+            class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
+        <img src="nav-map.png" class="w-full h-full object-contain">
+    </button>
+
+    <button @click="currentTab = 'info'" 
+            :class="currentTab === 'info' ? 'bg-white scale-110' : 'bg-white/80'" 
+            class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
+        <img src="nav-info.png" class="w-full h-full object-contain">
+    </button>
+
+    <button @click="currentTab = 'shopping'" 
+            :class="currentTab === 'shopping' ? 'bg-white scale-110' : 'bg-white/80'" 
+            class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
+        <img src="nav-shop.png" class="w-full h-full object-contain">
+    </button>
+
+    <button @click="currentTab = 'expense'" 
+            :class="currentTab === 'expense' ? 'bg-white scale-110' : 'bg-white/80'" 
+            class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
+        <img src="nav-money.png" class="w-full h-full object-contain">
+    </button>
+
+</div>
     </header>
 
     <div class="relative -mt-6 bg-[#f8fafc] rounded-t-[30px] px-5 pt-6 z-10 min-h-[500px] max-w-[480px] mx-auto">
@@ -503,9 +508,9 @@
             const currentHeaderImage = computed(() => {
                 const imageMap = {
                     'itinerary': 'header-bg.png',
-                    'info': 'header-info.jpg',
-                    'shopping': 'header-shop.jpg',
-                    'expense': 'header-money.jpg'
+                    'info': 'header-info.png',
+                    'shopping': 'header-shop.png',
+                    'expense': 'header-money.png'
                 };
                 return imageMap[currentTab.value] || 'header-bg.png';
             });
@@ -700,3 +705,4 @@
 </script>
 </body>
 </html>
+
