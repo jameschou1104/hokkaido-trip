@@ -177,7 +177,8 @@
             </button>
         </div>
 
-        <div class="bg-white rounded-2xl p-5 card-shadow">
+        <div v-show="currentTab === 'info'" class="space-y-6 pb-20">
+            <div class="bg-white rounded-2xl p-5 card-shadow">
                 <h3 class="font-bold text-gray-800 mb-4 flex items-center"><i class="fa-solid fa-coins text-yellow-500 mr-2"></i> 匯率換算 (今日)</h3>
                 <div class="flex items-center space-x-4">
                     <div class="flex-1">
@@ -528,28 +529,22 @@
             const showExpModal = ref(false);
             const expForm = reactive({ category: '飲食', name: '', amount: '', payment: '現金' });
 
-            // =========== 匯率換算 (即時版 Logic) ===========
-            
-            const currencyJpy = ref(1000); 
+            // 匯率
+            const currencyJpy = ref(1000);
             const currencyTwd = ref(0);
-            const exchangeRate = ref(0.218); // 預設值 (萬一沒網路時用)
-            const exchangeRateText = ref('連線中...'); 
+            const exchangeRate = ref(0.218); 
+            const exchangeRateText = ref('連線中...');
 
-            // 1. 抓取即時匯率函式
+            // 即時匯率抓取
             const fetchExchangeRate = async () => {
                 try {
-                    // 👇👇👇 請把這裡換成你的 API Key 👇👇👇
                     const apiKey = '59e0d17c27c49c5a6cc332c6'; 
-                    // 👆👆👆 記得保留引號 👆👆👆
-
                     const res = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/JPY`);
                     const data = await res.json();
-
                     if (data.result === 'success') {
-                        // 成功抓到！更新匯率 (TWD)
                         exchangeRate.value = data.conversion_rates.TWD;
                         exchangeRateText.value = `即時匯率: ${exchangeRate.value}`;
-                        convertCurrency(); // 重新算一次金額
+                        convertCurrency();
                     } else {
                         exchangeRateText.value = '載入失敗，使用參考匯率: 0.218';
                     }
@@ -559,12 +554,11 @@
                 }
             };
 
-            // 2. 執行換算
             const convertCurrency = () => {
                 currencyTwd.value = Math.round(currencyJpy.value * exchangeRate.value);
             };
-
-            // 3. 畫面載入時，立刻去抓匯率
+            
+            // 啟動時抓取
             fetchExchangeRate();
 
             const resetForm = () => {
@@ -703,7 +697,6 @@
 
             const openMap = (location) => {
                 if(location.includes('前往') || location.includes('航班')) return;
-                // 修正後的 Google Maps URL
                 const query = encodeURIComponent(location + ' 北海道');
                 window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
             };
@@ -733,12 +726,10 @@
                 showShopModal, shoppingList, shopForm, handleImageUpload, saveShopItem,
                 showExpModal, expenses, expForm, saveExpense, deleteExpense, totalExpenseTWD, expenseCash, expenseCard,
                 openMap, getCategoryColor, getCategoryIcon, getTransportIcon, getExpenseIcon,
-                currentHeaderImage, weather,exchangeRateText,exchangeRate
+                currentHeaderImage, weather, exchangeRateText, exchangeRate
             };
         }
     }).mount('#app');
 </script>
 </body>
 </html>
-
-
