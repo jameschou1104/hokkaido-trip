@@ -667,15 +667,15 @@
             };
 
             const totalExpenseTWD = computed(() => {
-                return Math.round(expenses.reduce((sum, item) => sum + (item.amount * 0.218), 0));
+                return Math.round(expenses.reduce((sum, item) => sum + (item.amount * exchangeRate.value), 0));
             });
             const expenseCash = computed(() => {
-                 let total = expenses.filter(i => i.payment === '現金').reduce((sum, i) => sum + (i.amount * 0.218), 0);
-                 return Math.round(total);
+                let total = expenses.filter(i => i.payment === '現金').reduce((sum, i) => sum + (i.amount * exchangeRate.value), 0);
+                return Math.round(total);
             });
             const expenseCard = computed(() => {
-                 let total = expenses.filter(i => i.payment === '信用卡').reduce((sum, i) => sum + (i.amount * 0.218), 0);
-                 return Math.round(total);
+                let total = expenses.filter(i => i.payment === '信用卡').reduce((sum, i) => sum + (i.amount * exchangeRate.value), 0);
+                return Math.round(total);
             });
 
             const weather = reactive({ temp: '--', feelsLike: '--', text: '載入中...', icon: 'fa-snowflake' });
@@ -733,3 +733,4 @@
 </script>
 </body>
 </html>
+
