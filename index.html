@@ -49,25 +49,25 @@
             <button @click="currentTab = 'itinerary'" 
                     :class="currentTab === 'itinerary' ? 'bg-white scale-110' : 'bg-white/80'" 
                     class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
-                <i class="fa-solid fa-map-location-dot text-blue-500 text-lg"></i>
+                <img src="nav-map.png" class="w-full h-full object-contain">
             </button>
 
             <button @click="currentTab = 'info'" 
                     :class="currentTab === 'info' ? 'bg-white scale-110' : 'bg-white/80'" 
                     class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
-                <i class="fa-solid fa-circle-info text-blue-500 text-lg"></i>
+                <img src="nav-info.png" class="w-full h-full object-contain">
             </button>
 
             <button @click="currentTab = 'shopping'" 
                     :class="currentTab === 'shopping' ? 'bg-white scale-110' : 'bg-white/80'" 
                     class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
-                <i class="fa-solid fa-bag-shopping text-blue-500 text-lg"></i>
+                <img src="nav-shop.png" class="w-full h-full object-contain">
             </button>
 
             <button @click="currentTab = 'expense'" 
                     :class="currentTab === 'expense' ? 'bg-white scale-110' : 'bg-white/80'" 
                     class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all backdrop-blur-sm p-2">
-                <i class="fa-solid fa-yen-sign text-blue-500 text-lg"></i>
+                <img src="nav-money.png" class="w-full h-full object-contain">
             </button>
         </div>
     </header>
@@ -450,11 +450,12 @@
             // =========== 1. 雲端同步邏輯 (櫃子模式) ===========
             
             onMounted(() => {
-                // A. 監聽行程
+                // A. 監聽行程 (讀取時：把櫃子組裝回陣列)
                 db.collection('hokkaido_trip').doc('itinerary').onSnapshot((doc) => {
                     if (doc.exists) {
                         const cloudData = doc.data(); 
                         for (let i = 0; i < 7; i++) {
+                            // 把 "0", "1" 櫃子裡的東西拿出來，放回我們的陣列
                             if (cloudData && cloudData[i.toString()]) {
                                 itineraryData[i] = cloudData[i.toString()];
                             } else {
@@ -488,10 +489,12 @@
             // ★ 關鍵修正：行程變動時，自動打包成 Object 再存
             watch(itineraryData, (newVal) => {
                 const dataToSave = {};
+                // 把每一天的行程，放進對應號碼的櫃子
                 newVal.forEach((dayList, index) => {
                     dataToSave[index.toString()] = dayList;
                 });
 
+                // 存檔
                 db.collection('hokkaido_trip').doc('itinerary').set(dataToSave)
                     .then(() => console.log("行程同步成功 ✅"))
                     .catch((error) => console.error("行程同步失敗 ❌", error));
@@ -511,12 +514,13 @@
                 return itineraryData[selectedDateIndex.value] || [];
             });
 
+            // Header Images
             const currentHeaderImage = computed(() => {
                 const imageMap = {
                     'itinerary': 'header-bg.png',
-                    'info': 'header-info.jpg',
-                    'shopping': 'header-shop.jpg',
-                    'expense': 'header-money.jpg'
+                    'info': 'header-info.png', 
+                    'shopping': 'header-shop.png',
+                    'expense': 'header-money.png'
                 };
                 return imageMap[currentTab.value] || 'header-bg.png';
             });
@@ -560,6 +564,7 @@
             };
             fetchExchangeRate();
 
+            // 功能函式
             const resetForm = () => {
                 Object.assign(form, { category: '景點', name: '', time: '', ticket: '', notes: '' });
             };
@@ -571,7 +576,9 @@
                 showAddModal.value = true;
             };
 
+            // ✅ saveItinerary 現在只負責修改本地資料，存檔交給 watch 自動處理
             const saveItinerary = () => {
+                // 防呆：確保當天有陣列
                 if (!itineraryData[selectedDateIndex.value]) {
                     itineraryData[selectedDateIndex.value] = [];
                 }
@@ -592,6 +599,7 @@
                         transportType: randomTransport
                     });
                 }
+                // 關閉視窗 (資料會由 watch 自動觸發上傳)
                 showAddModal.value = false;
             };
 
