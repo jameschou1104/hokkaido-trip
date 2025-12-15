@@ -36,7 +36,8 @@
         }
         .card-shadow { box-shadow: 0 4px 20px rgba(148, 163, 184, 0.15); }
         .weather-gradient { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%); }
-        /* 修正時間輸入框在部分瀏覽器的預設圖示 */
+        
+        /* 隱藏原生時間輸入框的小圖示，讓樣式更乾淨 */
         input[type="time"]::-webkit-calendar-picker-indicator {
             background: transparent;
             bottom: 0;
@@ -48,9 +49,6 @@
             right: 0;
             top: 0;
             width: auto;
-        }
-        input[type="time"] {
-            position: relative;
         }
     </style>
 </head>
@@ -356,7 +354,14 @@
                 </select>
                 <input v-model="form.name" type="text" placeholder="名稱" class="w-full bg-gray-50 p-3 rounded-lg border-none">
                 
-                <input v-model="form.time" type="time" class="w-full bg-gray-50 p-3 rounded-lg border-none outline-none text-gray-800">
+                <input 
+                    v-model="form.time" 
+                    placeholder="時間"
+                    onfocus="(this.type='time')"
+                    onblur="(if(!this.value) this.type='text')"
+                    :type="form.time ? 'time' : 'text'"
+                    class="w-full bg-gray-50 p-3 rounded-lg border-none outline-none text-gray-800 placeholder-gray-400"
+                >
 
                 <div class="bg-gray-50 rounded-lg p-3 flex items-center space-x-2">
                     <div class="flex items-center text-gray-400 w-16 flex-shrink-0">
