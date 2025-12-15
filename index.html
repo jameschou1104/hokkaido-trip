@@ -576,33 +576,63 @@
                 showAddModal.value = true;
             };
 
-            // 第一處修正：儲存行程的函式 (加入防呆)
+            // 🛑 偵錯版儲存功能 🛑
             const saveItinerary = () => {
-                // ★ 關鍵修復：儲存前先檢查，如果當天資料壞了，立刻修好它
-                if (!Array.isArray(itineraryData[selectedDateIndex.value])) {
-                    itineraryData[selectedDateIndex.value] = [];
-                }
+                try {
+                    // 步驟 1
+                    alert("步驟 1: 開始儲存...");
+                    const idx = selectedDateIndex.value;
+                    alert("步驟 2: 目前選擇的日期索引是 " + idx);
 
-                if (isEditing.value) {
-                    const list = itineraryData[selectedDateIndex.value];
-                    const index = list.findIndex(i => i.id === editingId.value);
-                    if (index !== -1) {
-                        Object.assign(list[index], form);
+                    // 檢查資料結構
+                    if (!itineraryData) {
+                        throw new Error("itineraryData 完全不見了！");
                     }
-                } else {
-                    const transportOptions = ['walk', 'car', 'bus'];
-                    const randomTransport = transportOptions[Math.floor(Math.random() * transportOptions.length)];
-                    const randomTime = Math.floor(Math.random() * 20 + 5) + '分鐘';
+                    if (!itineraryData[idx]) {
+                        alert("⚠️ 發現當天資料壞掉，正在修復...");
+                        itineraryData[idx] = [];
+                    }
 
-                    // 因為上面已經修復過了，這裡絕對不會再當機
-                    itineraryData[selectedDateIndex.value].push({
-                        id: Date.now(),
-                        ...form,
-                        travelTime: randomTime,
-                        transportType: randomTransport
-                    });
+                    // 步驟 3
+                    alert("步驟 3: 資料結構檢查 OK，準備寫入...");
+
+                    if (isEditing.value) {
+                        // 編輯模式
+                        const list = itineraryData[idx];
+                        const index = list.findIndex(i => i.id === editingId.value);
+                        if (index !== -1) {
+                            Object.assign(list[index], form);
+                        } else {
+                            throw new Error("找不到要編輯的行程 ID");
+                        }
+                    } else {
+                        // 新增模式
+                        const transportOptions = ['walk', 'car', 'bus'];
+                        const randomTransport = transportOptions[Math.floor(Math.random() * transportOptions.length)];
+                        const randomTime = Math.floor(Math.random() * 20 + 5) + '分鐘';
+                        
+                        const newItem = {
+                            id: Date.now(),
+                            ...form,
+                            travelTime: randomTime,
+                            transportType: randomTransport
+                        };
+
+                        // 關鍵動作
+                        itineraryData[idx].push(newItem);
+                    }
+
+                    // 步驟 4
+                    alert("步驟 4: 寫入成功！準備關閉視窗...");
+                    showAddModal.value = false;
+                    
+                    alert("🎉 完成！(如果這裡有跳出來，代表本地儲存成功)");
+
+                } catch (error) {
+                    // 這一行會告訴我們真正的兇手是誰！
+                    alert("❌ 發生錯誤！原因：" + error.message);
+                    console.error(error);
                 }
-                showAddModal.value = false;
             };
 
             const deleteItineraryItem = (index) => {
@@ -744,6 +774,7 @@
 </script>
 </body>
 </html>
+
 
 
 
