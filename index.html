@@ -492,18 +492,29 @@
                 });
             });
 
-            // =========== 自動上傳 ===========
+            
+            // =========== 2. 自動上傳 (Auto Save：含錯誤警示) ===========
             
             watch(itineraryData, (newVal) => {
-                db.collection('hokkaido_trip').doc('itinerary').set({ list: newVal });
+                db.collection('hokkaido_trip').doc('itinerary').set({ list: newVal })
+                    .then(() => {
+                        console.log("行程雲端儲存成功！"); 
+                    })
+                    .catch((error) => {
+                        // 🚨 如果存檔失敗，這裡會跳出視窗警告你！
+                        alert("⚠️ 雲端存檔失敗！\n行程可能無法保留。\n原因：" + error.message);
+                        console.error("Error writing document: ", error);
+                    });
             }, { deep: true });
 
             watch(shoppingList, (newVal) => {
-                db.collection('hokkaido_trip').doc('shopping').set({ list: newVal });
+                db.collection('hokkaido_trip').doc('shopping').set({ list: newVal })
+                    .catch(error => console.error("購物清單存檔失敗", error));
             }, { deep: true });
 
             watch(expenses, (newVal) => {
-                db.collection('hokkaido_trip').doc('expenses').set({ list: newVal });
+                db.collection('hokkaido_trip').doc('expenses').set({ list: newVal })
+                    .catch(error => console.error("花費存檔失敗", error));
             }, { deep: true });
 
             // ===============================
@@ -747,6 +758,7 @@
 </script>
 </body>
 </html>
+
 
 
 
