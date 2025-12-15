@@ -459,13 +459,18 @@
             // =========== 雲端同步邏輯 ===========
             
             onMounted(() => {
-                // A. 監聽行程
+                // A. 監聽行程 (加入防呆機制：確保資料一定是陣列)
                 db.collection('hokkaido_trip').doc('itinerary').onSnapshot((doc) => {
                     if (doc.exists) {
                         const cloudData = doc.data().list;
-                        cloudData.forEach((dayData, index) => {
-                            itineraryData[index] = dayData;
-                        });
+                        // 防呆 1: 確認抓下來的是陣列
+                        if (Array.isArray(cloudData)) {
+                            cloudData.forEach((dayData, index) => {
+                                // 防呆 2: 確保每一天的資料也是陣列，如果壞掉就給它空陣列 []
+                                // 這樣等一下要 push 才不會報錯
+                                itineraryData[index] = Array.isArray(dayData) ? dayData : [];
+                            });
+                        }
                     }
                 });
 
@@ -573,6 +578,10 @@
             };
 
             const saveItinerary = () => {
+                // 防呆 3: 如果當天的資料結構壞了，立刻修復成空陣列
+                if (!Array.isArray(itineraryData[selectedDateIndex.value])) {
+                    itineraryData[selectedDateIndex.value] = [];
+                }
                 if (isEditing.value) {
                     const list = itineraryData[selectedDateIndex.value];
                     const index = list.findIndex(i => i.id === editingId.value);
@@ -733,4 +742,5 @@
 </script>
 </body>
 </html>
+
 
