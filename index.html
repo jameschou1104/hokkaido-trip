@@ -587,16 +587,16 @@
                 showAddModal.value = true;
             };
 
-            // ✅ 強制存檔版 saveItinerary
+            // ✅ 最終淨化版 saveItinerary
             const saveItinerary = () => {
                 console.log("1. 開始儲存程序...");
                 
-                // 防呆：確保陣列存在
+                // 防呆
                 if (!Array.isArray(itineraryData[selectedDateIndex.value])) {
                     itineraryData[selectedDateIndex.value] = [];
                 }
 
-                // 修改或新增資料
+                // 修改或新增本地資料
                 if (isEditing.value) {
                     const list = itineraryData[selectedDateIndex.value];
                     const index = list.findIndex(i => i.id === editingId.value);
@@ -614,13 +614,17 @@
                     });
                 }
                 
-                // 🛑 這裡新增：強制手動上傳到 Firebase！
-                console.log("2. 準備上傳到 Firebase...");
-                db.collection('hokkaido_trip').doc('itinerary').set({ list: itineraryData })
+                // 🛑 關鍵修改在這裡：使用 JSON 轉換來「淨化」Vue 的代理物件 🛑
+                // 這樣 Firebase 絕對能看懂！
+                const cleanData = JSON.parse(JSON.stringify(itineraryData));
+
+                console.log("2. 準備上傳到 Firebase...", cleanData);
+                
+                db.collection('hokkaido_trip').doc('itinerary').set({ list: cleanData })
                     .then(() => {
                         console.log("3. Firebase 上傳成功！✅");
-                        alert("✅ 儲存成功！資料已同步到雲端。");
-                        showAddModal.value = false; // 成功才關閉視窗
+                        alert("✅ 儲存成功！資料已同步到雲端。\n(請重新整理網頁檢查是否還在)");
+                        showAddModal.value = false;
                     })
                     .catch((error) => {
                         console.error("3. Firebase 上傳失敗 ❌", error);
@@ -767,6 +771,7 @@
 </script>
 </body>
 </html>
+
 
 
 
