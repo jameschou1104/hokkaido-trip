@@ -459,15 +459,14 @@
             // =========== 雲端同步邏輯 ===========
             
             onMounted(() => {
-                // A. 監聽行程 (加入防呆機制：確保資料一定是陣列)
+                // 第二處修正：讀取雲端資料 (加入過濾壞資料機制)
                 db.collection('hokkaido_trip').doc('itinerary').onSnapshot((doc) => {
                     if (doc.exists) {
                         const cloudData = doc.data().list;
-                        // 防呆 1: 確認抓下來的是陣列
+                        // 確保雲端抓下來的真的是陣列
                         if (Array.isArray(cloudData)) {
                             cloudData.forEach((dayData, index) => {
-                                // 防呆 2: 確保每一天的資料也是陣列，如果壞掉就給它空陣列 []
-                                // 這樣等一下要 push 才不會報錯
+                                // ★ 關鍵修復：如果某天資料是 null，就強制變回空陣列 []
                                 itineraryData[index] = Array.isArray(dayData) ? dayData : [];
                             });
                         }
@@ -577,11 +576,13 @@
                 showAddModal.value = true;
             };
 
+            // 第一處修正：儲存行程的函式 (加入防呆)
             const saveItinerary = () => {
-                // 防呆 3: 如果當天的資料結構壞了，立刻修復成空陣列
+                // ★ 關鍵修復：儲存前先檢查，如果當天資料壞了，立刻修好它
                 if (!Array.isArray(itineraryData[selectedDateIndex.value])) {
                     itineraryData[selectedDateIndex.value] = [];
                 }
+
                 if (isEditing.value) {
                     const list = itineraryData[selectedDateIndex.value];
                     const index = list.findIndex(i => i.id === editingId.value);
@@ -593,6 +594,7 @@
                     const randomTransport = transportOptions[Math.floor(Math.random() * transportOptions.length)];
                     const randomTime = Math.floor(Math.random() * 20 + 5) + '分鐘';
 
+                    // 因為上面已經修復過了，這裡絕對不會再當機
                     itineraryData[selectedDateIndex.value].push({
                         id: Date.now(),
                         ...form,
@@ -742,5 +744,6 @@
 </script>
 </body>
 </html>
+
 
 
