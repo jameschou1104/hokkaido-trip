@@ -36,6 +36,22 @@
         }
         .card-shadow { box-shadow: 0 4px 20px rgba(148, 163, 184, 0.15); }
         .weather-gradient { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%); }
+        /* 修正時間輸入框在部分瀏覽器的預設圖示 */
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            background: transparent;
+            bottom: 0;
+            color: transparent;
+            cursor: pointer;
+            height: auto;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: auto;
+        }
+        input[type="time"] {
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -340,12 +356,20 @@
                 </select>
                 <input v-model="form.name" type="text" placeholder="名稱" class="w-full bg-gray-50 p-3 rounded-lg border-none">
                 
-                <div class="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
-                    <div class="flex items-center text-gray-400">
-                        <i class="fa-regular fa-clock mr-2"></i>
-                        <span class="text-sm font-medium">時間</span>
+                <input v-model="form.time" type="time" class="w-full bg-gray-50 p-3 rounded-lg border-none outline-none text-gray-800">
+
+                <div class="bg-gray-50 rounded-lg p-3 flex items-center space-x-2">
+                    <div class="flex items-center text-gray-400 w-16 flex-shrink-0">
+                        <i class="fa-solid fa-route mr-2"></i>
+                        <span class="text-sm font-medium">交通</span>
                     </div>
-                    <input v-model="form.time" type="time" class="bg-transparent border-none outline-none text-gray-800 font-bold text-right w-32">
+                    <select v-model="form.transportType" class="bg-transparent border-none outline-none text-gray-700 text-sm flex-1">
+                        <option value="walk">走路</option>
+                        <option value="car">開車</option>
+                        <option value="bus">公車/地鐵</option>
+                        <option value="train">火車/JR</option>
+                    </select>
+                    <input v-model="form.travelTime" type="text" placeholder="例如: 15分鐘" class="bg-transparent border-l border-gray-200 pl-2 outline-none text-gray-800 text-sm w-24 text-right">
                 </div>
 
                 <input v-if="form.category === '景點'" v-model="form.ticket" type="text" placeholder="門票資訊" class="w-full bg-gray-50 p-3 rounded-lg border-none">
@@ -450,12 +474,11 @@
             // =========== 1. 雲端同步邏輯 (櫃子模式) ===========
             
             onMounted(() => {
-                // A. 監聽行程 (讀取時：把櫃子組裝回陣列)
+                // A. 監聽行程
                 db.collection('hokkaido_trip').doc('itinerary').onSnapshot((doc) => {
                     if (doc.exists) {
                         const cloudData = doc.data(); 
                         for (let i = 0; i < 7; i++) {
-                            // 把 "0", "1" 櫃子裡的東西拿出來，放回我們的陣列
                             if (cloudData && cloudData[i.toString()]) {
                                 itineraryData[i] = cloudData[i.toString()];
                             } else {
@@ -486,15 +509,12 @@
 
             // =========== 2. 自動上傳 (打包模式) ===========
             
-            // ★ 關鍵修正：行程變動時，自動打包成 Object 再存
             watch(itineraryData, (newVal) => {
                 const dataToSave = {};
-                // 把每一天的行程，放進對應號碼的櫃子
                 newVal.forEach((dayList, index) => {
                     dataToSave[index.toString()] = dayList;
                 });
 
-                // 存檔
                 db.collection('hokkaido_trip').doc('itinerary').set(dataToSave)
                     .then(() => console.log("行程同步成功 ✅"))
                     .catch((error) => console.error("行程同步失敗 ❌", error));
@@ -514,7 +534,6 @@
                 return itineraryData[selectedDateIndex.value] || [];
             });
 
-            // Header Images
             const currentHeaderImage = computed(() => {
                 const imageMap = {
                     'itinerary': 'header-bg.png',
@@ -528,7 +547,9 @@
             const showAddModal = ref(false);
             const isEditing = ref(false);
             const editingId = ref(null);
-            const form = reactive({ category: '景點', name: '', time: '', ticket: '', notes: '' });
+            
+            // 表單加入 travelTime 和 transportType
+            const form = reactive({ category: '景點', name: '', time: '', ticket: '', notes: '', travelTime: '', transportType: 'walk' });
             
             const showShopModal = ref(false);
             const shopForm = reactive({ name: '', image: null });
@@ -564,9 +585,8 @@
             };
             fetchExchangeRate();
 
-            // 功能函式
             const resetForm = () => {
-                Object.assign(form, { category: '景點', name: '', time: '', ticket: '', notes: '' });
+                Object.assign(form, { category: '景點', name: '', time: '', ticket: '', notes: '', travelTime: '', transportType: 'walk' });
             };
 
             const editItinerary = (item) => {
@@ -576,9 +596,7 @@
                 showAddModal.value = true;
             };
 
-            // ✅ saveItinerary 現在只負責修改本地資料，存檔交給 watch 自動處理
             const saveItinerary = () => {
-                // 防呆：確保當天有陣列
                 if (!itineraryData[selectedDateIndex.value]) {
                     itineraryData[selectedDateIndex.value] = [];
                 }
@@ -588,18 +606,11 @@
                     const index = list.findIndex(i => i.id === editingId.value);
                     if (index !== -1) Object.assign(list[index], form);
                 } else {
-                    const transportOptions = ['walk', 'car', 'bus'];
-                    const randomTransport = transportOptions[Math.floor(Math.random() * transportOptions.length)];
-                    const randomTime = Math.floor(Math.random() * 20 + 5) + '分鐘';
-
                     itineraryData[selectedDateIndex.value].push({
                         id: Date.now(),
-                        ...form,
-                        travelTime: randomTime,
-                        transportType: randomTransport
+                        ...form 
                     });
                 }
-                // 關閉視窗 (資料會由 watch 自動觸發上傳)
                 showAddModal.value = false;
             };
 
