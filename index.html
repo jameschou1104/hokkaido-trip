@@ -587,26 +587,25 @@
                 showAddModal.value = true;
             };
 
-            // ✅ 正式版儲存功能 (安靜模式)
+            // ✅ 強制存檔版 saveItinerary
             const saveItinerary = () => {
-                // 1. 防呆：確保當天資料結構是陣列 (如果壞了就修好)
+                console.log("1. 開始儲存程序...");
+                
+                // 防呆：確保陣列存在
                 if (!Array.isArray(itineraryData[selectedDateIndex.value])) {
                     itineraryData[selectedDateIndex.value] = [];
                 }
 
+                // 修改或新增資料
                 if (isEditing.value) {
-                    // 編輯模式
                     const list = itineraryData[selectedDateIndex.value];
                     const index = list.findIndex(i => i.id === editingId.value);
-                    if (index !== -1) {
-                        Object.assign(list[index], form);
-                    }
+                    if (index !== -1) Object.assign(list[index], form);
                 } else {
-                    // 新增模式
                     const transportOptions = ['walk', 'car', 'bus'];
                     const randomTransport = transportOptions[Math.floor(Math.random() * transportOptions.length)];
                     const randomTime = Math.floor(Math.random() * 20 + 5) + '分鐘';
-
+                    
                     itineraryData[selectedDateIndex.value].push({
                         id: Date.now(),
                         ...form,
@@ -615,8 +614,18 @@
                     });
                 }
                 
-                // 關閉視窗
-                showAddModal.value = false;
+                // 🛑 這裡新增：強制手動上傳到 Firebase！
+                console.log("2. 準備上傳到 Firebase...");
+                db.collection('hokkaido_trip').doc('itinerary').set({ list: itineraryData })
+                    .then(() => {
+                        console.log("3. Firebase 上傳成功！✅");
+                        alert("✅ 儲存成功！資料已同步到雲端。");
+                        showAddModal.value = false; // 成功才關閉視窗
+                    })
+                    .catch((error) => {
+                        console.error("3. Firebase 上傳失敗 ❌", error);
+                        alert("❌ 儲存失敗！原因：" + error.message);
+                    });
             };
 
             const deleteItineraryItem = (index) => {
@@ -758,6 +767,7 @@
 </script>
 </body>
 </html>
+
 
 
 
